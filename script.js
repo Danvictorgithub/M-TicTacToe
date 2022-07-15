@@ -1,63 +1,68 @@
-
-//Game ON Logic
-const gameBoard = function() {
-}();
-
-// Player Factory Function
-// name -> string
-// marker -> string
-const Player = (name,marker) => {
+function Player(name, marker) {
     return {name, marker};
-};
-// Player Initialization
-const Player1 = ("Dan","X");
-const Player2 = ("Victor", "O");
-
-
-let gameON = true;
-function gamePlay() {
-    PlayersTurn(Player1,Player2);
 }
-function PlayersTurn(Player1,Player2) {
-    const playMark1 = Player1.marker;
-    const playMark2 = Player2.marker;
-    let turn = false;
-    while (gameON) {
-        if (turn == false ) {
-            markerGrid(playMark1);
-            turn = true;
-        } else {
-            markerGrid(playMark2);
-            turn = false;
-        }
-    }
-}
-// markerGrid -> string
-// Allows each square to receive currentPlayer 'marker'
-// with no replace side-effect
-function markerGrid(marker) {
-    const gridRow = document.querySelectorAll(".gridRow");
-    gridRow.forEach( (row) => {
-        const gridCol = row.childNodes;
-        gridCol.forEach((square) => addMark(square,marker));
-    });
-};
-function addMark(childNode, marker) {
-    if (childNode.textContent == '') {
-        childNode.addEventListener('click', (e) => mark(e, marker));
+const Player1 = Player("Player1", "X");
+const Player2 = Player("Player2", "Y");
+let move = 0;
+let squares = document.querySelectorAll('.square');
+
+function playerRotate(P1,P2) {
+    if (move % 2 == 0) {
+        currentMarker(P1.marker);
     } else {
-        childNode.removeEventListener('click', (e) => mark(e, marker));
+        currentMarker(P2.marker);
     }
 }
-function mark(e, marker) {
-    e.target.textContent = `${marker}`;  
+// marker -> string
+// Sets each square with to receive marker specified.
+function currentMarker(marker) {
+    squares.forEach( (square) => {
+        if (square.textContent == '')
+        square.addEventListener('click', markListener);
+    });
+    function markListener(event) {
+        mark(event, marker);
+    }
+    function mark(e,marker) {
+        move++;
+        e.target.textContent = `${marker}`;
+        squares.forEach( (square) => {
+            square.removeEventListener('click', markListener);
+        });
+        playerRotate(Player1,Player2);
+    }
 }
+
+// Game Check
 // Returns Array of the Game for GameCheck
 function returnGameBoardArray() {
     const boardArray = [];
-    const _board = document.querySelectorAll('.board'); 
+    const _board = document.querySelectorAll('.square'); 
     _board.forEach((board) => {
         boardArray.splice(0,0,board.textContent);
     });
     return boardArray.reverse();
 }
+
+function gameCheck(marker) {
+    const aBoard = returnGameBoardArray();
+    const ArrayCheck = [marker,marker,marker];
+    // Row/Horizontal  Win
+    if ( (aBoard.slice(0,3).join() == ArrayCheck.join()) || 
+         (aBoard.slice(3,6).join() == ArrayCheck.join()  || 
+         (aBoard.slice(6,9).join() == ArrayCheck.join()))){
+        console.log(`${marker} Wins`);
+    }
+    // Column/Vertical Check Win
+    if ( ([aBoard[0],aBoard[3],aBoard[6]].join() == ArrayCheck.join()) ||
+         ([aBoard[1],aBoard[4],aBoard[7]].join() == ArrayCheck.join()) ||
+         ([aBoard[2],aBoard[5],aBoard[8]].join() == ArrayCheck.join())){
+            console.log(`${marker} Wins`);
+    }
+    // Diagonal Check Win
+    if ( ([aBoard[0],aBoard[4],aBoard[8]].join() == ArrayCheck.join()) ||
+         ([aBoard[2],aBoard[4],aBoard[6]].join() == ArrayCheck.join()) ){
+            console.log(`${marker} Wins`);
+    }
+}
+playerRotate(Player1,Player2);
