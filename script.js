@@ -1,10 +1,12 @@
 function Player(name, marker) {
     return {name, marker};
 }
+// Initialization
 const Player1 = Player("Player1", "X");
 const Player2 = Player("Player2", "Y");
 let move = 0;
 let squares = document.querySelectorAll('.square');
+let gameON = true;
 
 function playerRotate(P1,P2) {
     if (move % 2 == 0) {
@@ -29,10 +31,11 @@ function currentMarker(marker) {
         squares.forEach( (square) => {
             square.removeEventListener('click', markListener);
         });
+        gameCheck(marker);
+        if (gameON)
         playerRotate(Player1,Player2);
     }
 }
-
 // Game Check
 // Returns Array of the Game for GameCheck
 function returnGameBoardArray() {
@@ -51,18 +54,21 @@ function gameCheck(marker) {
     if ( (aBoard.slice(0,3).join() == ArrayCheck.join()) || 
          (aBoard.slice(3,6).join() == ArrayCheck.join()  || 
          (aBoard.slice(6,9).join() == ArrayCheck.join()))){
-        console.log(`${marker} Wins`);
+        alert(`${marker} Wins`);
+        gameON = false;
     }
     // Column/Vertical Check Win
     if ( ([aBoard[0],aBoard[3],aBoard[6]].join() == ArrayCheck.join()) ||
          ([aBoard[1],aBoard[4],aBoard[7]].join() == ArrayCheck.join()) ||
          ([aBoard[2],aBoard[5],aBoard[8]].join() == ArrayCheck.join())){
-            console.log(`${marker} Wins`);
+        alert(`${marker} Wins`);
+        gameON = false;
     }
     // Diagonal Check Win
     if ( ([aBoard[0],aBoard[4],aBoard[8]].join() == ArrayCheck.join()) ||
          ([aBoard[2],aBoard[4],aBoard[6]].join() == ArrayCheck.join()) ){
-            console.log(`${marker} Wins`);
+        alert(`${marker} Wins`);
+        gameON = false;
     }
 }
 playerRotate(Player1,Player2);
